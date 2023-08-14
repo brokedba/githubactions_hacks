@@ -54,7 +54,7 @@ jobs:
       with:
         path: |
           ~/.terraform.d/plugin-cache
-          ./${{ env.STACK_DIR }}/terraform.tfstate
+          ./*
         key: ${{ runner.os }}-terraform-${{ github.run_id }}
         restore-keys: |
           key: ${{ runner.os }}-terraform-${{ github.run_id }}                 
