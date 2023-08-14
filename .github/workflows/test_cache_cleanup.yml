@@ -113,6 +113,6 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         gh extension install actions/gh-actions-cache
-        echo " deleting tfstate caches"
+        echo " deleting sensitive cache from our workflow"
         gh actions-cache list
         gh actions-cache delete ${{ runner.os }}-terraform-${{ github.run_id }} --confirm
