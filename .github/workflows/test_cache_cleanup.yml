@@ -15,7 +15,7 @@ jobs:
  # ######################
 # job1
   terraform_setup_cache_load:
-    name: 'Terraform Setup and load cache'
+    name: 'tf init & cache load'
     runs-on: ubuntu-latest
     environment: lab-tests
   # Use default shell and working directory regardless of the os of the GitHub Actions runner 
