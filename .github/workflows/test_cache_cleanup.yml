@@ -39,7 +39,8 @@ jobs:
         echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
         mkdir --parents ~/.terraform.d/plugin-cache
         terraform -v
-        which terraform
+        terra_bin=`which terraform`
+        cp $terra_bin .
     # 3. Perform remaining steps ...example terraform init, format tasks before storing the content into our cache.    
     # - name: terraform init
     #   run: |
