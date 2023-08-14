@@ -38,6 +38,8 @@ jobs:
       run: |
         echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
         mkdir --parents ~/.terraform.d/plugin-cache
+        terraform -v
+        which terraform
     # 3. Perform remaining steps ...example terraform init, format tasks before storing the content into our cache.    
     # - name: terraform init
     #   run: |
@@ -94,6 +96,8 @@ jobs:
       run: |
         echo "== Reusing cached version of terraform including the tf.plan ==" 
         # steps to Authenticate to your provider skipped...
+        terraform -v
+        which terraform
         sudo cp ./terraform  /usr/local/bin/
         terraform -v      
        # terraform plan -input=false -no-color -out tf.plan
