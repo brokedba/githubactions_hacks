@@ -105,7 +105,8 @@ jobs:
 # ########################
 # CACHE CLEANUP AFTER USE
 # ########################  
-    # clean unique terraform workflow cache using GitHub CLI command using GH token.     
+    # clean unique terraform workflow cache using GitHub CLI command using GH token. 
+    # This action used a write all permission of GITHUB TOKEN , but there is probably a way to be more granular.
     - name: clean cache
       id: cache_deletion
       env:
