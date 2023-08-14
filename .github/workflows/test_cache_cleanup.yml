@@ -96,7 +96,7 @@ jobs:
     - name: Terraform Plan
       id: plan
       run: |
-        echo "== Reusing cached version of terraform including the tf.plan ==" 
+        echo "== Reusing cached version of terraform binary 1.0.3 ==" 
         # steps to Authenticate to your provider skipped...
         sudo cp ./terraform  /usr/local/bin/
         terraform -v      
