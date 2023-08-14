@@ -1,1 +1,114 @@
+name: 'My_Cache_cleanup_Workflow'
+on:
+  push:
+    branches: [ "git_actions" ]
+    paths:
+      - '.github/workflows/test_cache_cleanup.yml'    
+permissions:
+  id-token: write
+# env:
+  # your environment variables ...
 
+jobs:
+ # ######################
+ # Install Terraform job
+ # ######################
+# job1
+  terraform_setup_cache_load:
+    name: 'Terraform Setup and load cache'
+    runs-on: ubuntu-latest
+    environment: lab-tests
+  # Use default shell and working directory regardless of the os of the GitHub Actions runner 
+    defaults:
+     run:
+       shell: bash
+    steps:
+    # 1. Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # 2. Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.3
+        terraform_wrapper: false
+    # Create a cache for the terraform pluggin and copy terraform binary
+    - name: Config Terraform plugin cache
+      run: |
+        echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+        mkdir --parents ~/.terraform.d/plugin-cache
+    # 3. Perform remaining steps ...example terraform init, format tasks before storing the content into our cache.    
+    # - name: terraform init
+    #   run: |
+    # Initialize a new or existing Terraform working directory(creating initial files, loading any remote state, downloading modules..)
+    #     terraform init ...
+    # steps to Authenticate to your provider skipped ..
+    
+# ################################### 
+#  Save direcory files into our cache
+# ###################################    
+     #  Save all plugin files and working Directory in a cache
+    - name: Cache Terraform
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.terraform.d/plugin-cache
+          ./${{ env.STACK_DIR }}/terraform.tfstate
+        key: ${{ runner.os }}-terraform-${{ github.run_id }}
+        restore-keys: |
+          key: ${{ runner.os }}-terraform-${{ github.run_id }}                 
+#  job2:
+ # ############
+ # PLAN job
+ # ############ 
+  Terraform_Plan:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    environment: labs_tests
+    needs: [terraform_setup_cache_load]
+    
+    defaults:
+      run:
+        shell: bash
+    steps:
+    # Checkout the repository to the GitHub Actions runner not necessary. The cache has it
+    - name: Cache Terraform
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.terraform.d/plugin-cache
+          ./*
+        key: ${{ runner.os }}-terraform-${{ github.run_id }}
+        restore-keys: |
+          key: ${{ runner.os }}-terraform-${{ github.run_id }}    
+    
+    # Configure terraform pluggin in the new runner using loeaded dependencies from cache.                          
+    - name: Config Terraform plugin cache
+      run: |
+        echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+    # terraform init not needed here . int files are already in the cache
+# PLAN    
+    - name: Terraform Plan
+      id: plan
+      run: |
+        echo "== Reusing cached version of terraform including the tf.plan ==" 
+        # steps to Authenticate to your provider skipped...
+        sudo cp ./terraform  /usr/local/bin/
+        terraform -v      
+       # terraform plan -input=false -no-color -out tf.plan
+
+# ########################
+# CACHE CLEANUP AFTER USE
+# ########################  
+    # clean terraform cache completion       
+    - name: clean cache
+      id: cache_deletion
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh extension install actions/gh-actions-cache
+        echo " deleting tfstate caches"
+        gh actions-cache list
+        gh actions-cache delete ${{ runner.os }}-terraform-${{ github.run_id }} --confirm
+        # gh actions-cache delete ${{ runner.os }}-${{Other_Key_values}}   --confirm
