@@ -69,6 +69,7 @@ jobs:
     name: 'Terraform Plan'
     runs-on: ubuntu-latest
     environment: labs_tests
+    permissions: write-all
     needs: [terraform_setup_cache_load]
     
     defaults:
