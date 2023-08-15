@@ -46,7 +46,7 @@ jobs:
     #   run: |
     # Initialize a new or existing Terraform working directory(creating initial files, loading any remote state, downloading modules..)
     #     terraform init ...
-    # steps to Authenticate to your provider skipped ..
+    # Steps to Authenticate to your provider skipped ..
     
 # ################################### 
 #  Save direcory files into our cache
